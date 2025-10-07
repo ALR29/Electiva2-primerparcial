@@ -10,7 +10,7 @@ env:
   NTFY_URL: https://ntfy.sh/devops-itla
   NODE_VERSION: '18'
   SURGE_API_KEY: 26d27c0d40c5396c87589f946d3dc381  # tu token
-  SURGE_DOMAIN: alr2005.surge.sh   # cambia por tu subdominio
+  SURGE_DOMAIN: ALR-2005.surge.sh   # cambia por tu subdominio
 
 jobs:
   build-test-deploy:
@@ -90,7 +90,7 @@ jobs:
         run: |
           npm install --global surge
           surge token ${{ env.SURGE_API_KEY }}
-          surge --project ./ --domain ${{ env.SURGE_DOMAIN }}
+          surge --project ./ --domain ${{ env.SURGE_DOMAIN }} --force
 
       # 9️⃣ Resumen final
       - name: 📊 Resumen
