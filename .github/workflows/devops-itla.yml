@@ -10,7 +10,7 @@ env:
   NTFY_URL: https://ntfy.sh/devops-itla
   NODE_VERSION: '18'
   SURGE_API_KEY: 26d27c0d40c5396c87589f946d3dc381  # tu token
-  SURGE_DOMAIN: SURGE_PRIMERPARCIAL_DOMAIN.surge.sh   # cambia por tu subdominio
+  SURGE_DOMAIN: alr2005.surge.sh   # cambia por tu subdominio
 
 jobs:
   build-test-deploy:
