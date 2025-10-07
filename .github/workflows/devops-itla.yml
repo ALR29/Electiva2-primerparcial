@@ -1,0 +1,97 @@
+name: CI/CD - DevOps ITLA
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch: 
+
+env:
+  NTFY_URL: https://ntfy.sh/devops-itla   
+  NODE_VERSION: '18'
+
+jobs:
+  build-test-notify:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 📥 Checkout del código
+        uses: actions/checkout@v4
+      
+      - name: ⚙️ Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      
+      - name: 📋 Información del commit
+        run: |
+          echo "================================================"
+          echo "INFORMACIÓN DEL BUILD"
+          echo "================================================"
+          echo "📦 Repositorio: ${{ github.repository }}"
+          echo "🌿 Rama: ${{ github.ref_name }}"
+          echo "👤 Autor: ${{ github.actor }}"
+          echo "💬 Mensaje: ${{ github.event.head_commit.message }}"
+          echo "🔖 Commit SHA: ${{ github.sha }}"
+          echo "🔗 Workflow: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          echo "================================================"
+
+      - name: 🚀 Ejecutar app.js
+        run: |
+          echo "Ejecutando app.js..."
+          node app.js
+      
+      - name: 🧪 Ejecutar tests
+        run: |
+          echo "Ejecutando tests..."
+          node app.test.js
+
+      - name: ✅ Notificar éxito
+        if: success()
+        run: |
+          COMMIT_MSG=$(echo "${{ github.event.head_commit.message }}" | head -n 1)
+          WORKFLOW_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          
+          curl -H "Title: ✅ BUILD EXITOSO - DevOps ITLA" \
+               -H "Priority: default" \
+               -H "Tags: white_check_mark,rocket,tada" \
+               -H "Actions: view, Ver Logs, $WORKFLOW_URL, clear=true" \
+               -d "🎉 Build completado correctamente!
+          
+          📦 Repositorio: ${{ github.repository }}
+          🌿 Rama: ${{ github.ref_name }}
+          👤 Autor: ${{ github.actor }}
+          💬 Commit: $COMMIT_MSG
+          🔖 SHA: ${{ github.sha }}
+          🔗 Logs: $WORKFLOW_URL" \
+               ${{ env.NTFY_URL }}
+      
+      - name: ❌ Notificar error
+        if: failure()
+        run: |
+          COMMIT_MSG=$(echo "${{ github.event.head_commit.message }}" | head -n 1)
+          WORKFLOW_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          
+          curl -H "Title: ❌ BUILD FALLIDO - DevOps ITLA" \
+               -H "Priority: urgent" \
+               -H "Tags: x,warning,rotating_light" \
+               -H "Actions: view, Ver Logs, $WORKFLOW_URL, clear=true" \
+               -d "⚠️ El build ha fallado!
+          
+          📦 Repositorio: ${{ github.repository }}
+          🌿 Rama: ${{ github.ref_name }}
+          👤 Autor: ${{ github.actor }}
+          💬 Commit: $COMMIT_MSG
+          🔖 SHA: ${{ github.sha }}
+          🔗 Logs: $WORKFLOW_URL" \
+               ${{ env.NTFY_URL }}
+      
+      - name: 📊 Resumen
+        if: always()
+        run: |
+          echo "================================================"
+          echo "RESUMEN DEL BUILD"
+          echo "================================================"
+          echo "Estado: ${{ job.status }}"
+          echo "Duración: ${{ github.event.head_commit.timestamp }}"
+          echo "================================================"
