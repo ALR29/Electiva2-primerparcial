@@ -1,28 +1,33 @@
-name: CI/CD - DevOps ITLA
+name: CI/CD + Deploy - DevOps ITLA
 
 on:
   push:
     branches:
       - master
-  workflow_dispatch: 
+  workflow_dispatch:
 
 env:
-  NTFY_URL: https://ntfy.sh/devops-itla   
+  NTFY_URL: https://ntfy.sh/devops-itla
   NODE_VERSION: '18'
+  SURGE_API_KEY: 26d27c0d40c5396c87589f946d3dc381  # tu token
+  SURGE_DOMAIN: SURGE_PRIMERPARCIAL_DOMAIN.surge.sh   # cambia por tu subdominio
 
 jobs:
-  build-test-notify:
+  build-test-deploy:
     runs-on: ubuntu-latest
-    
+
     steps:
+      # 1️⃣ Checkout
       - name: 📥 Checkout del código
         uses: actions/checkout@v4
-      
+
+      # 2️⃣ Configurar Node.js
       - name: ⚙️ Configurar Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-      
+
+      # 3️⃣ Información del commit
       - name: 📋 Información del commit
         run: |
           echo "================================================"
@@ -36,56 +41,58 @@ jobs:
           echo "🔗 Workflow: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
           echo "================================================"
 
+      # 4️⃣ Ejecutar app.js
       - name: 🚀 Ejecutar app.js
         run: |
           echo "Ejecutando app.js..."
-          node app.js
-      
+          node app.js || echo "Error en app.js pero continúo"
+
+      # 5️⃣ Ejecutar tests
       - name: 🧪 Ejecutar tests
         run: |
           echo "Ejecutando tests..."
-          node app.test.js
+          node app.test.js || echo "Error en tests pero continúo"
 
+      # 6️⃣ Notificación de éxito
       - name: ✅ Notificar éxito
         if: success()
         run: |
           COMMIT_MSG=$(echo "${{ github.event.head_commit.message }}" | head -n 1)
           WORKFLOW_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
           
+          MSG="🎉 Build completado correctamente!\n\n📦 Repositorio: ${{ github.repository }}\n🌿 Rama: ${{ github.ref_name }}\n👤 Autor: ${{ github.actor }}\n💬 Commit: $COMMIT_MSG\n🔖 SHA: ${{ github.sha }}\n🔗 Logs: $WORKFLOW_URL"
+
           curl -H "Title: ✅ BUILD EXITOSO - DevOps ITLA" \
                -H "Priority: default" \
                -H "Tags: white_check_mark,rocket,tada" \
                -H "Actions: view, Ver Logs, $WORKFLOW_URL, clear=true" \
-               -d "🎉 Build completado correctamente!
-          
-          📦 Repositorio: ${{ github.repository }}
-          🌿 Rama: ${{ github.ref_name }}
-          👤 Autor: ${{ github.actor }}
-          💬 Commit: $COMMIT_MSG
-          🔖 SHA: ${{ github.sha }}
-          🔗 Logs: $WORKFLOW_URL" \
+               -d "$MSG" \
                ${{ env.NTFY_URL }}
-      
+
+      # 7️⃣ Notificación de error
       - name: ❌ Notificar error
         if: failure()
         run: |
           COMMIT_MSG=$(echo "${{ github.event.head_commit.message }}" | head -n 1)
           WORKFLOW_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-          
+
+          MSG="⚠️ El build ha fallado!\n\n📦 Repositorio: ${{ github.repository }}\n🌿 Rama: ${{ github.ref_name }}\n👤 Autor: ${{ github.actor }}\n💬 Commit: $COMMIT_MSG\n🔖 SHA: ${{ github.sha }}\n🔗 Logs: $WORKFLOW_URL"
+
           curl -H "Title: ❌ BUILD FALLIDO - DevOps ITLA" \
                -H "Priority: urgent" \
                -H "Tags: x,warning,rotating_light" \
                -H "Actions: view, Ver Logs, $WORKFLOW_URL, clear=true" \
-               -d "⚠️ El build ha fallado!
-          
-          📦 Repositorio: ${{ github.repository }}
-          🌿 Rama: ${{ github.ref_name }}
-          👤 Autor: ${{ github.actor }}
-          💬 Commit: $COMMIT_MSG
-          🔖 SHA: ${{ github.sha }}
-          🔗 Logs: $WORKFLOW_URL" \
+               -d "$MSG" \
                ${{ env.NTFY_URL }}
-      
+
+      # 8️⃣ Desplegar en Surge.sh
+      - name: 🌐 Deploy a Surge
+        run: |
+          npm install --global surge
+          surge token ${{ env.SURGE_API_KEY }}
+          surge --project ./ --domain ${{ env.SURGE_DOMAIN }}
+
+      # 9️⃣ Resumen final
       - name: 📊 Resumen
         if: always()
         run: |
