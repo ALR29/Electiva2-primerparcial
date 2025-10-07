@@ -1,0 +1,19 @@
+{
+  "name": "primerparcial",
+  "version": "1.0.0",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ALR29/Electiva2-primerparcial.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ALR29/Electiva2-primerparcial/issues"
+  },
+  "homepage": "https://github.com/ALR29/Electiva2-primerparcial#readme",
+  "description": ""
+}
