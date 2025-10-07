@@ -3,7 +3,7 @@ name: CI/CD - DevOps ITLA
 on:
   push:
     branches:
-      - main
+      - master
   workflow_dispatch: 
 
 env:
