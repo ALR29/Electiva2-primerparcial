@@ -89,8 +89,7 @@ jobs:
       - name: 🌐 Deploy a Surge
         run: |
           npm install --global surge
-          surge token ${{ env.SURGE_API_KEY }}
-          surge --project ./public --domain ${{ env.SURGE_DOMAIN }} --force
+          surge --project ./public --domain ${{ env.SURGE_DOMAIN }} --token ${{ env.SURGE_API_KEY }} --force
 
       # 9️⃣ Resumen final
       - name: 📊 Resumen
