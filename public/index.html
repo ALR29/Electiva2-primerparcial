@@ -4,20 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Vóley Motivación - Angel Luis Rosario</title>
-  <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Anton&display=swap" rel="stylesheet">
   <style>
-    /* Reset básico */
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
       font-family: 'Roboto', sans-serif;
-      background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1591883772322-9a3fcf2f15ff?auto=format&fit=crop&w=1950&q=80') no-repeat center center fixed;
-      background-size: cover;
+      background: linear-gradient(135deg, #ff6b35, #ff3d00);
       color: #fff;
       min-height: 100vh;
       display: flex;
@@ -26,6 +19,8 @@
       align-items: center;
       text-align: center;
       padding: 20px;
+      overflow: hidden;
+      position: relative;
     }
 
     h1 {
@@ -48,18 +43,27 @@
       font-size: 1.2rem;
       font-weight: bold;
       color: #fff;
-      background-color: #ff6b35;
+      background-color: #ffc107;
       border: none;
       border-radius: 8px;
       text-decoration: none;
       transition: all 0.3s ease;
       box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+      cursor: pointer;
     }
 
     .button:hover {
-      background-color: #ff3d00;
+      background-color: #ffeb3b;
       transform: translateY(-3px);
       box-shadow: 0 6px 10px rgba(0,0,0,0.5);
+    }
+
+    #motivationalText {
+      font-size: 1.6rem;
+      margin: 20px 0;
+      font-weight: bold;
+      color: #fff;
+      text-shadow: 1px 1px 6px #000;
     }
 
     footer {
@@ -68,17 +72,33 @@
       font-size: 1rem;
       opacity: 0.8;
     }
+
+    canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 0;
+      pointer-events: none;
+      display: none;
+    }
   </style>
 </head>
 <body>
+
+  <canvas id="animationCanvas"></canvas>
+
   <h1>¡Vamos Vóley!</h1>
   <p>Sigue entrenando, mantén la motivación y nunca dejes de alcanzar tus metas en el voleibol. ¡Cada punto cuenta y cada esfuerzo vale la pena!</p>
-  <a href="#" class="button">¡Quiero inspirarme!</a>
+
+  <button class="button" id="startButton">¡Quiero inspirarme!</button>
+
+  <div id="motivationalText"></div>
 
   <footer>
-    Página creada por Angel Luis Rosario 
-    Matricula: 2024-0079
-    🏐
+    Página creada por Angel Luis Rosario <br>
+    Matrícula: 2024-0079 🏐
   </footer>
+
+  <script src="app.js"></script>
 </body>
 </html>
